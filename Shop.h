@@ -13,6 +13,7 @@ class Shop
 {
     public:
         void create_new_robot_part(robot_part * a);
+        void create_new_robot_part(int cmd);
         void create_new_robot_model();
         void create_new_customer();
         void create_new_sales_associate();
@@ -22,7 +23,7 @@ class Shop
         void view_parts();
         
     private:
-        vector<robot_part*> store_parts;
+        vector<robot_part *> store_parts;
         vector<Robot_model> store_model;
         string filename;
 };
