@@ -9,7 +9,16 @@ using namespace std;
 
 double Robot_model::cost()
 {
-    return(torso.cost + head.cost + locomotor.cost + arm.cost + battery.cost);
+    double Cost = torso->get_cost() + head->get_cost() + locomotor->get_cost();
+    for(int i = 0; i < arm.size(); i ++)
+    {
+        Cost += arm[i]->get_cost();
+    }
+    for(int i = 0; i < battery.size(); i ++)
+    {
+        Cost += battery[i]->get_cost();
+    }
+    return Cost;
 }
 double Robot_model::max_speed()
 {
@@ -19,8 +28,23 @@ double Robot_model::max_battery_life()
 {
     return 0;
 }
-
-void Robot_model::print()
+string Robot_model::print_summary()
 {
-    printf("Model Name: %s\nModel Number: %d\nTorso: %s\nHead: %s\nLocomotor: %s\nArm: %s\nBattery: %s\n", name.c_str(), model_number, (torso.name).c_str(), (head.name).c_str(), (locomotor.name).c_str(), (arm.name).c_str(), (battery.name).c_str());
+    string result = "";
+    result = "\nModel: " + name + "\nModel #: " + ::to_string(model_number) + "\nCost: $" + ::to_string(cost());
+    return result;
+}
+string Robot_model::print()
+{
+    string result;
+    result =  "\nModel: " + name + "\nModel #: " + ::to_string(model_number) + "\n" + head->to_string() + locomotor->to_string() + torso->to_string();
+    for(int i = 0; i < arm.size(); i ++)
+    {
+        result += arm[i]->to_string();
+    }
+    for(int i = 0; i < battery.size(); i ++)
+    {
+        result += battery[i]->to_string();
+    }
+    return result;
 }
