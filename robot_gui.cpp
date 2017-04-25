@@ -595,6 +595,7 @@ class Shop
         void save (string _filename);
         void open (string _filename);
         string view_parts();
+        double part_cost(int part_number);
         void view_parts(int index);
         vector<int> get_part_list(int);
         bool bat_valid(int n, int current);
@@ -911,6 +912,10 @@ void Shop::create_new_robot_part(int cmd)
     return;
 }
 
+double Shop::part_cost(int part_number)
+{
+    return(store_parts[part_number]->get_cost());
+}
 void Shop::create_new_robot_model(string name, int model_number, int t, int h, int l, vector<int> a, vector<int> b)
 {
     vector<robot_part*> arm;
@@ -1089,557 +1094,6 @@ int Shop::get_part_size()
 
 Shop _shop;
 
-// /////////////////////////////////////
-//             V I E W
-// /////////////////////////////////////
-
-//class view
-//{
-//    public:
-//        view(Shop _shop): shop(_shop) {}
-//        int menu()
-//        {
-//            int input;
-//            cout << "==============================\n      Welcome to K-Bot\n==============================\n";
-//            cout << "Create: \n(1)  Order\n(2)  Customer\n(3)  Sales Associate\n(4)  Robot Model\n(5)  Robot Component\n";
-//            cout << "View: \n(6)  Orders\n(7)  Customers\n(8)  Sales Associates\n(9)  Robot Models\n(10) Robot Parts\n(11) Load File\n(12) Save\n(-1) To Quit\n(99) To Test Program\nPlease select Option: ";
-//            cin >> input;
-//            return input;
-//        }
-//        void view_only_menu()
-//        {
-//            cout << "==============================\n      Welcome to K-Bot\n==============================\n";
-//            cout << "Create: \n(1)  Order\n(2)  Customer\n(3)  Sales Associate\n(4)  Robot Model\n(5)  Robot Component\n";
-//            cout << "View: \n(6)  Orders\n(7)  Customers\n(8)  Sales Associates\n(9)  Robot Models\n(10) Robot Parts\n(-1) To Quit\n(99) To Test Program\nPlease select Option: ";
-//        }
-//        int part_menu()
-//        {
-//            int input;
-//            cout << "==============================\n          Select Part\n==============================\n(1) Head\n(2) Locomotor\n(3) Arm\n(4) Battery\n(4) Torso\nSelect option: ";
-//            cin >> input;
-//            return input;
-//        }
-//        int model_menu()
-//        {
-//            int input;
-//            cout << "==============================\n    Select Part to Build\n==============================\n(1)  Head\n(2)  Locomotor\n(3)  Torso\n(4)  Arm\n(5)  Battery\n\n(0)  To Build\n(-1) Go to Main menu\nSelect option: ";
-//            cin >> input;
-//            return input;
-//        }
-//    private:
-//        Shop shop;   
-//};
-
-//int cmd(Shop &_shop,view _view, int _cmd)
-//{
-//    if (_cmd == -1)
-//    {
-//        return -1;
-//    }
-//    else if(_cmd == 11)
-//    {
-//        _shop.open("hello");
-//        cout << "\n****File Loaded!****\n\n(Enter Y to continue): ";
-//        string junk;
-//        cin >> junk; 
-//        return 0;
-//    }
-//    else if(_cmd == 12)
-//    {
-//        _shop.save("hello");
-//        cout << "\n****File Saved!****\n\n(Enter Y to continue): ";
-//        string junk;
-//        cin >> junk; 
-//        return 0;
-//    }
-//    else if(_cmd == 6)
-//    {
-//        system("clear");
-//        _shop.view_orders();
-//    }
-//    else if(_cmd == 1)
-//    {
-//        system("clear");
-//        cout << "==============================\n      Creating Order\n==============================\n\nEnter Today's date: ";
-//        string date;
-//        cin.ignore();
-//        getline(cin, date);
-//        system("clear");
-//        cout << "==============================\n      Creating Order\n==============================\n\nSelect Customer ";
-//        _shop.view_customers();
-//        int c_select;
-//        cout <<"\nEnter Customer Id: ";
-//        cin >> c_select;
-//        system("clear");
-//        cout << "==============================\n      Creating Order\n==============================\n\nSelect Sales Associate ";
-//        _shop.view_sales_associates();
-//        int s_select;
-//        cout <<"\nEnter Associate Index: ";
-//        cin >> s_select;
-//        system("clear");
-//        cout << "==============================\n      Creating Order\n==============================\n\nSelect Model  ";
-//        _shop.view_model_summary();
-//        int m_select;
-//        cout <<"Enter Model Index: ";
-//        cin >> m_select;
-//        system("clear");
-//        cout << "==============================\n      Creating Order\n==============================\n\nOrder Status (0) Pending | (1) Completed ";
-//        int st_select;
-//        cout <<"\nEnter Status: ";
-//        cin >> st_select;
-//        system("clear");
-//        cout << "==============================\n      Creating Order\n==============================\n\nOrder Created! (Enter Y to continue): ";
-//        _shop.create_new_order(date, c_select, s_select, m_select, st_select);
-//        string junk;
-//        cin >> junk;
-//    }
-//    else if(_cmd == 99)
-//    {
-//        Head * head1;
-//        head1 = new Head(_shop.get_part_size(),"head_test1", 233, 34.45, "Test Head", 33.5, 44.4);
-//        _shop.create_new_robot_part(head1);
-//        Head * head2;
-//        head2 = new Head(_shop.get_part_size(),"head_test2", 233323, 33.45, "Test Head2", 55.4, 44.4);
-//        _shop.create_new_robot_part(head2);
-//        Head * head3;
-//        head3 = new Head(_shop.get_part_size(),"head_test3", 23423, 49.45, "Test Head3", 77.6, 44.4);
-//        _shop.create_new_robot_part(head3);
-//        Head * head4;
-//        head4 = new Head(_shop.get_part_size(),"head_test4", 243223, 39.45, "Test Head4", 10.9, 44.4);
-//        //Head *head1 = malloc(sizeof(Head));
-//        //Head head1("head_test1", 23323, 34.45, "Test Model", "model_image.jpg", 44.4);
-//        _shop.create_new_robot_part(head4);
-//        Locomotor *Loc1 = new Locomotor(_shop.get_part_size(),"Test Loco", 33443, 33.4, "Test Desc", 18.5, 44.3);
-//        _shop.create_new_robot_part(Loc1);
-//        Torso *Tor1 = new Torso(_shop.get_part_size(),"Torso_test1", 23323, 34.45, "Test Model", 22.9, 2, 2);
-//        _shop.create_new_robot_part(Tor1);
-//        
-//        Battery *Bat1 = new Battery(_shop.get_part_size(),"Battery_test1", 23323, 34.45, "Test Model", 34.3, 22.2, 33.3);
-//        _shop.create_new_robot_part(Bat1);
-//        Arm* arm1 = new Arm(_shop.get_part_size(),"Arm_test1", 23323, 34.45, "Test Model", 45.3, 33.43);
-//        _shop.create_new_robot_part(arm1);
-//        
-//        Locomotor *Loc2 = new Locomotor(_shop.get_part_size(),"Test Loco 2", 333, 22.4, "Test Desc", 99.3, 32.3);
-//        _shop.create_new_robot_part(Loc2);
-//        Locomotor *Loc3 = new Locomotor(_shop.get_part_size(),"Test Loco 3", 334893, 11.4, "Test Desc", 12.3, 44.3);
-//        _shop.create_new_robot_part(Loc3);
-//        _shop.create_new_customer("John Smith", "(925)-334-5454", "john.smith@yahoo.com");
-//        _shop.create_new_customer("Kashif Iqbal", "(614)-446-8374", "kashif.iqbal@mavs.uta.edu");
-//        _shop.create_new_customer("Rob Clark", "(668)-334-4354", "rob.clark@gmail.com");
-//        _shop.create_new_sales_associate("Jake Michael", 991);
-//        _shop.create_new_sales_associate("Coby Williams", 374);
-//        _shop.create_new_sales_associate("Jane Hall", 348);
-//        vector<int> a;
-//        vector<int> b;
-//        a.push_back(7);
-//        a.push_back(7);
-//        b.push_back(6);
-//        _shop.create_new_robot_model("Tesla 1", 43, 5, 2, 8, a, b);
-//        b.push_back(6);
-//        _shop.create_new_robot_model("Tesla 2", 54, 5, 3, 4, a, b);
-//        _shop.create_new_order("03/04/2017", 1, 0, 0, 0);
-//        _shop.create_new_order("03/08/2017", 0, 1, 1, 1);
-//    }
-//    else if(_cmd == 2)
-//    {
-//        system("clear");
-//        cout << "==============================\n      Creating Customer\n==============================\n\nEnter Customer's name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter Phone Number: ";
-//        string phone_number;
-//        cin.ignore();
-//        getline(cin, phone_number);
-//        cout << "Enter Email Address: ";
-//        string email;
-//        cin.ignore();
-//        getline(cin, email);
-//        _shop.create_new_customer(name, phone_number, email);
-//        cout << "\n****Customer Created!****\n(Enter Y to continue): ";
-//        string junk;
-//        cin >> junk;   
-//    }
-//    else if(_cmd == 3)
-//    {
-//        system("clear");
-//        cout << "==============================\n  Creating Sales Associate\n==============================\n\nEnter Associate's name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter Employee ID: ";
-//        int id;
-//        cin >> id;
-//        _shop.create_new_sales_associate(name, id);
-//        cout << "\n****Sales Associate Created!****\n(Enter Y to continue): ";
-//        string junk;
-//        cin >> junk; 
-//    }
-//    else if(_cmd == 7)
-//    {
-//        system("clear");
-//        _shop.view_customers();
-//        cout << "\n(Enter Y to continue): ";
-//        string junk;
-//        cin >> junk;
-//    }
-//    else if(_cmd == 8)
-//    {
-//        system("clear");
-//        _shop.view_sales_associates();
-//        cout << "\n(Enter Y to continue): ";
-//        string junk;
-//        cin >> junk;
-//    }
-//    else if(_cmd == 4)
-//    {
-//        system("clear");
-//        int part = _view.model_menu();
-//        vector<int> a;
-//        vector<int> b;
-//        int h;
-//        int l;
-//        int t;
-//        bool h1 = false;
-//        bool l1 = false;
-//        bool t1 = false;
-//        bool a1 = false;
-//        bool b1 = false;
-//        while (part != -1)
-//        {
-//            if (part == 1)
-//            {
-//                _shop.view_parts(1);
-//                cout << "\nSelect which Part Index: ";
-//                cin >> h;
-//                h1 = _shop.is_valid(h, 1);
-//                if(h1 == false)
-//                {
-//                    cout << "Invalid Entry -- Try again! (Press Y to continue): ";
-//                    string junk;
-//                    cin >> junk;
-//                }
-//            }
-//            else if(part == 2)
-//            {
-//                _shop.view_parts(2);
-//                cout << "\nSelect which Part Index: ";
-//                cin >> l;
-//                l1 = _shop.is_valid(l, 2);
-//                if(l1 == false)
-//                {
-//                    cout << "Invalid Entry -- Try again! (Press Y to continue): ";
-//                    string junk;
-//                    cin >> junk;
-//                }
-//            }
-//            else if(part == 3)
-//            {
-//                _shop.view_parts(3);
-//                cout << "\nSelect which Part Index: ";
-//                cin >> t;
-//                t1 = _shop.is_valid(t, 3);
-//                if(t1 == false)
-//                {
-//                    cout << "Invalid Entry -- Try again! (Press Y to continue): ";
-//                    string junk;
-//                    cin >> junk;
-//                }
-//            }
-//            else if(part == 4)
-//            {
-//                if(!t1)
-//                {
-//                    cout << "Please select a valid Torso first! (Press Y to continue): ";
-//                    string junk;
-//                    cin >> junk; 
-//                }
-//                else
-//                {
-//                    if(_shop.arm_valid(t1, a.size()))
-//                    {
-//                        int temp;
-//                        _shop.view_parts(4);
-//                        cout << "\nSelect which Part Index: ";
-//                        cin >> temp;
-//                        a1 = _shop.is_valid(temp, 4);
-//                        if(a1 == false)
-//                        {
-//                            cout << "Invalid Entry -- Try again! (Press Y to continue): ";
-//                            string junk;
-//                            cin >> junk;
-//                        }
-//                        else
-//                        {
-//                            a.push_back(temp);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        cout << "Error! -- Already at max arms! (Press Y to continue): ";
-//                        string junk;
-//                        cin >> junk;
-//                    }
-//                }
-//            }
-//            else if(part == 5)
-//            {
-//                if(!t1)
-//                {
-//                    cout << "Please select a valid Torso first! (Press Y to continue): ";
-//                    string junk;
-//                    cin >> junk; 
-//                }
-//                else
-//                {
-//                    if(_shop.bat_valid(t1, b.size()))
-//                    {
-//                        int temp;
-//                        _shop.view_parts(5);
-//                        cout << "\nSelect which Part Index: ";
-//                        cin >> temp;
-//                        b1 = _shop.is_valid(temp, 5);
-//                        if(b1 == false)
-//                        {
-//                            cout << "Invalid Entry -- Try again! (Press Y to continue): ";
-//                            string junk;
-//                            cin >> junk;
-//                        }
-//                        else
-//                        {
-//                            b.push_back(temp);
-//                        }
-//                    }
-//                    else
-//                    {
-//                        cout << "Error! -- Already at max Batteries! (Press Y to continue): ";
-//                        string junk;
-//                        cin >> junk;
-//                    }
-//                }
-//            }
-//            
-//            system("clear");
-//            part = _view.model_menu();
-//            if (part == 0)
-//            {
-//                if(h1 && l1 && t1 && a1 && b1)
-//                {
-//                    cout << "Enter Model Name: ";
-//                    string name;
-//                    cin.ignore();
-//                    getline(cin, name);
-//                    cout << "Enter Model Number: ";
-//                    int model_number;
-//                    cin >> model_number;
-//                    cin.ignore();
-//                    _shop.create_new_robot_model(name, model_number, h, l, t, a, b);
-//                    cout << "\n****Model " << name << " Created!****\n(Enter Y to continue): ";
-//                    part = -1;
-//                    string junk;
-//                    cin >> junk;
-//                }
-//                else
-//                {
-//                    cout << "\nHead: " << h1 << "\nLocomotor:  " << l1 << "\nTorso: " << t1 << "\nArm: " << a1 << "\nBattery: " << b1 << endl;
-//                    cout << "****Not enough parts to create model!****\nEnter Y to continue adding parts: ";
-//                    string junk;
-//                    cin >> junk;
-//                }
-//            }
-//        }
-//        return 0;
-//    }
-//    else if(_cmd == 5)
-//    {
-//        system("clear");
-//        int part = _view.part_menu();
-//        if(part == 1)
-//    {
-//        system("clear");
-//        cout << "==============================\n        Creating Head\n==============================\n\nEnter component name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter model number: ";
-//        int model_number;
-//        cin >> model_number;
-//        cout << "Enter component cost ($): ";
-//        double cost;
-//        cin >> cost;
-//        string description;
-//        cout << "Enter component description: ";
-//        cin.ignore();
-//        getline(cin, description);
-//        cout << "Enter Weight: ";
-//        double weight;
-//        cin >> weight;
-//        double power;
-//        cout << "Enter power (W): ";
-//        cin >> power;
-//        Head *a = new Head(_shop.get_part_size(), name, model_number, cost, description, weight, power);
-//        _shop.create_new_robot_part(a);
-//        cout << "Part Added!\n\nPress Y to return to main menu: ";
-//        string junk;
-//        cin >> junk;
-//        return 0;
-//    }
-//    else if(part == 2)
-//    {
-//        system("clear");
-//        cout << "==============================\n     Creating Locomotor\n==============================\n\nEnter component name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter model number: ";
-//        int model_number;
-//        cin >> model_number;
-//        cout << "Enter component cost ($): ";
-//        double cost;
-//        cin >> cost;
-//        string description;
-//        cout << "Enter component description: ";
-//        cin.ignore();
-//        getline(cin, description);
-//        cout << "Enter Weight: ";
-//        double weight;
-//        cin >> weight;
-//        double power;
-//        cout << "Enter Max power (W): ";
-//        cin >> power;
-//        Locomotor * a = new Locomotor(_shop.get_part_size(),name, model_number, cost, description, weight, power);
-//        _shop.create_new_robot_part(a);
-//        cout << "Part Added!\n\nPress Y to return to main menu: ";
-//        string junk;
-//        cin >> junk;
-//        return 0;
-//    }
-//    else if(part == 3)
-//    {
-//        system("clear");
-//        cout << "==============================\n       Creating Torso\n==============================\n\nEnter component name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter model number: ";
-//        int model_number;
-//        cin >> model_number;
-//        cout << "Enter component cost ($): ";
-//        double cost;
-//        cin >> cost;
-//        string description;
-//        cout << "Enter component description: ";
-//        cin.ignore();
-//        getline(cin, description);
-//        cout << "Enter Weight: ";
-//        double weight;
-//        cin >> weight;
-//        cout << "Enter Battery Compartments: ";
-//        int battery_compartments;
-//        cin >> battery_compartments;
-//        cout << "Enter Max Arms: ";
-//        int max_arms;
-//        cin >> max_arms;
-//        Torso *a = new Torso(_shop.get_part_size(),name, model_number, cost, description, weight, battery_compartments, max_arms);
-//        _shop.create_new_robot_part(a);
-//        cout << "Part Added!\n\nPress Y to return to main menu: ";
-//        string junk;
-//        cin >> junk;
-//        return 0;
-//    }
-//    else if(part == 4)
-//    {
-//        system("clear");
-//        cout << "==============================\n       Creating Battery\n==============================\n\nEnter component name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter model number: ";
-//        int model_number;
-//        cin >> model_number;
-//        cout << "Enter component cost ($): ";
-//        double cost;
-//        cin >> cost;
-//        string description;
-//        cout << "Enter component description: ";
-//        cin.ignore();
-//        getline(cin, description);
-//        cout << "Enter Weight: ";
-//        double weight;
-//        cin >> weight;
-//        double power_available;
-//        cout << "Enter power available(W): ";
-//        cin >> power_available;
-//        double max_energy;
-//        cout << "Enter max energy: ";
-//        cin >> max_energy;
-//        Battery * a = new Battery(_shop.get_part_size(),name, model_number, cost, description, weight, power_available, max_energy);
-//        _shop.create_new_robot_part(a);
-//        cout << "Part Added!\n\nPress Y to return to main menu: ";
-//        string junk;
-//        cin >> junk;
-//        return 0;
-//    }
-//    else if(part == 5)
-//    {
-//        system("clear");
-//        cout << "==============================\n         Creating Arm\n==============================\n\nEnter component name: ";
-//        string name;
-//        cin.ignore();
-//        getline(cin, name);
-//        cout << "Enter model number: ";
-//        int model_number;
-//        cin >> model_number;
-//        cout << "Enter component cost ($): ";
-//        double cost;
-//        cin >> cost;
-//        string description;
-//        cout << "Enter component description: ";
-//        cin.ignore();
-//        getline(cin, description);
-//        cout << "Enter Weight: ";
-//        double weight;
-//        cin >> weight;
-//        double max_power;
-//        cout << "Enter max power (W): ";
-//        cin >> max_power;
-//        Arm * a = new Arm(_shop.get_part_size(), name, model_number, cost, description, weight, max_power);
-//        _shop.create_new_robot_part(a);
-//        cout << "Part Added!\n\nPress Y to return to main menu: ";
-//        string junk;
-//        cin >> junk;
-//        return 0;
-//    }
-//    else
-//    {
-//        cout << "Invalid Option!";
-//    }
-//    }
-//    else if(_cmd == 10)
-//    {
-//        system("clear");
-//        _shop.view_parts();
-//    }
-//    else if(_cmd == 9)
-//    {
-//        system("clear");
-//        int selection;
-//        _shop.view_model_summary();
-//        cout << "Enter index to view detail or (-1) for main menu: ";
-//        cin >> selection;
-//        if (selection == -1)
-//        {
-//            return 0;
-//        }
-//        system("clear");
-//        _shop.view_specific_model(selection);
-//    }
-//    return 0;
-//}
-
-// Callback to display the part entered
-
-//=====================================================================Head
 
 class Robot_Part_Dialog {
     public:
@@ -2123,7 +1577,8 @@ class Robot_Model_Dialog
             rp_add_bat->callback((Fl_Callback *)bat_cb, 0);
             rp_create = new Fl_Return_Button(70, 300, 120, 25, "Create");
             rp_create->callback((Fl_Callback *)create_robot_model_cb, 0);
-            
+//            const char* temp = "Total Cost: $ 00.00";
+//            box = new Fl_Box(300,y + 30,260,100, temp);
             dialog->end();
             dialog->set_non_modal();
             
@@ -2162,8 +1617,10 @@ class Robot_Model_Dialog
         Fl_Choice *rp_tor;
         Fl_Choice *rp_bat;
         Fl_Choice *rp_arm;
+        //Fl_Box *box;
         string name() {return rp_name->value();}
         int model_number() {return atoi(rp_model_number->value());}
+        double total_cost = 0;
     private:
         Fl_Window *dialog;
         Fl_Input *rp_name;
@@ -2183,24 +1640,46 @@ void create_robot_model(Fl_Widget* w, void* p)
 }
 void head_cb(Fl_Widget* w, void* p)
 {
-    dial->h = dial->head[dial->head_val()];
-    dial->rp_head->deactivate();
-    dial->h1 = true;
-    dial->rp_add_head->deactivate();
+    if(dial->head_val() == -1)
+    {
+        fl_message("Please make a selection first!");
+    }
+    else
+    {
+        dial->h = dial->head[dial->head_val()];
+        dial->rp_head->deactivate();
+        dial->h1 = true;
+        double cost = _shop.part_cost(dial->h);
+        dial->rp_add_head->deactivate();
+    }
 }
 void loc_cb(Fl_Widget* w, void* p)
 {
-    dial->l = dial->loc[dial->loc_val()];
-    dial->rp_loc->deactivate();
-    dial->rp_add_loc->deactivate();
-    dial->l1 = true;
+    if(dial->loc_val() == -1)
+    {
+        fl_message("Please make a selection first!");
+    }
+    else
+    {
+        dial->l = dial->loc[dial->loc_val()];
+        dial->rp_loc->deactivate();
+        dial->rp_add_loc->deactivate();
+        dial->l1 = true;
+    }
 }
 void tor_cb(Fl_Widget* w, void* p)
 {
-    dial->t = dial->tor[dial->tor_val()];
-    dial->rp_tor->deactivate();
-    dial->rp_add_tor->deactivate();
-    dial->t1 = true;
+    if(dial->tor_val() == -1)
+    {
+        fl_message("Please make a selection first!");
+    }
+    else
+    {
+        dial->t = dial->tor[dial->tor_val()];
+        dial->rp_tor->deactivate();
+        dial->rp_add_tor->deactivate();
+        dial->t1 = true;
+    }
 }
 void arm_cb(Fl_Widget* w, void* p)
 {
@@ -2216,12 +1695,19 @@ void arm_cb(Fl_Widget* w, void* p)
     }
     else
     {
-        dial->a.push_back(dial->arm[dial->arm_val()]);
-        dial->a1 = true;
-        if(!(_shop.arm_valid(dial->t, dial->a.size())))
+        if(dial->arm_val() == -1)
         {
-            dial->rp_arm->deactivate();
-            dial->rp_add_arm->deactivate();
+            fl_message("Please make a selection first!");
+        }
+        else
+        {
+            dial->a.push_back(dial->arm[dial->arm_val()]);
+            dial->a1 = true;
+            if(!(_shop.arm_valid(dial->t, dial->a.size())))
+            {
+                dial->rp_arm->deactivate();
+                dial->rp_add_arm->deactivate();
+            }
         }
     }
 }
@@ -2239,18 +1725,33 @@ void bat_cb(Fl_Widget* w, void* p)
     }
     else
     {
-        dial->b.push_back(dial->bat[dial->bat_val()]);
-        dial->b1 = true;
-        if(!(_shop.bat_valid(dial->t, dial->b.size())))
+        if(dial->bat_val() == -1)
         {
-            dial->rp_bat->deactivate();
-            dial->rp_add_bat->deactivate();
+            fl_message("Please make a selection first!");
+        }
+        else
+        {
+            dial->b.push_back(dial->bat[dial->bat_val()]);
+            dial->b1 = true;
+            if(!(_shop.bat_valid(dial->t, dial->b.size())))
+            {
+                dial->rp_bat->deactivate();
+                dial->rp_add_bat->deactivate();
+            }
         }
     }
 }
 void create_robot_model_cb(Fl_Widget* w, void* p) 
 {
-    if(dial->a1 && dial->b1 && dial->h1 && dial->t1 && dial->l1)
+    if(dial->name() == "")
+    {
+        fl_message("Model name missing!");
+    }
+    else if(dial->model_number() == 0)
+    {
+        fl_message("Model number missing!");
+    }
+    else if(dial->a1 && dial->b1 && dial->h1 && dial->t1 && dial->l1)
     {
         
         _shop.create_new_robot_model(dial->name(), dial->model_number(), dial->h, dial->l, dial->t, dial->a, dial->b);
