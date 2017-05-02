@@ -16,6 +16,9 @@
 #include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Float_Input.H>
 #include <FL/Fl_Choice.H>
+#include <FL/Fl_Double_Window.H>
+#include <FL/Fl_Group.H>
+#include <FL/Fl_Scroll.H>
 
 // /////////////////////////////////////
 //              P A R T
@@ -40,7 +43,10 @@ void loc_cb(Fl_Widget* w, void* p);
 void tor_cb(Fl_Widget* w, void* p);
 void arm_cb(Fl_Widget* w, void* p);
 void bat_cb(Fl_Widget* w, void* p);
-
+void create_customerCB(Fl_Widget* w, void* p);
+void cancel_customerCB(Fl_Widget* w, void* p);
+void create_associateCB(Fl_Widget* w, void* p);
+void cancel_associateCB(Fl_Widget* w, void* p);
 class robot_part 
 {
     public:
@@ -425,20 +431,37 @@ double Robot_model::max_speed()
 string Robot_model::print_summary()
 {
     string result = "";
-    result = "\nModel: " + name + "\nModel #: " + ::to_string(model_number) + "\nCost: $" + ::to_string(cost());
+    result = "\nModel: " + name + "\nModel #: " + ::to_string(model_number) + "\nCost: $" + ::to_string(cost()) + "\nWeight: " + ::to_string(total_weight());
+    
     return result;
 }
 string Robot_model::print()
 {
     string result;
-    result =  "\nModel: " + name + "\nModel #: " + ::to_string(model_number) + "\n" + head->to_string() + locomotor->to_string() + torso->to_string();
+    result =  "\nModel: " + name + "\nModel #: " + ::to_string(model_number) + "\n" + "Head:                           " + head->get_name() + "\nLocomotor:                 " + locomotor->get_name() + "\nTorso:                          " + torso->get_name() + "\n";
     for(int i = 0; i < arm.size(); i ++)
     {
-        result += arm[i]->to_string();
+        if(arm.size() > 1)
+        {
+            result += "Arm " + ::to_string(i + 1) + " :";
+        }
+        else
+        {
+            result += "Arm:    ";
+        }
+        result += "                         " + arm[i]->get_name() + "\n";
     }
     for(int i = 0; i < battery.size(); i ++)
     {
-        result += battery[i]->to_string();
+        if(battery.size() > 1)
+        {
+            result += "Battery " + ::to_string(i + 1) + " :";
+        }
+        else
+        {
+            result += "Battery:     ";
+        }
+        result += "                   " +battery[i]->get_name() + "\n";
     }
     return result;
 }
@@ -604,7 +627,7 @@ class Shop
         void view_models();
         string view_customers();
         string view_sales_associates();
-        void view_model_summary();
+        string view_model_summary();
         void view_specific_model(int index);
         void view_orders();
         int get_part_size();
@@ -1039,16 +1062,17 @@ string Shop::view_parts()
     return result;
 }
 
-void Shop::view_model_summary()
+string Shop::view_model_summary()
 {
-    cout << "Total Models: " << store_model.size() << endl;
+    string result = "";
+    result += "Total Models: " + ::to_string(store_model.size()) + "\n";
     for(int i = 0; i < store_model.size(); i ++)
     {
-        cout << store_model[i]->print_summary();
-        cout << "\nModel Index: " << i << endl;
-        cout << "\n===========================================================\n";
+        result += store_model[i]->print();
+        result += "\nModel Index: " + ::to_string(i) + "\n" ;
+        result += "\n===========================================================\n";
     }
-    return;
+    return result;
 }
 
 void Shop::view_specific_model(int index)
@@ -1741,6 +1765,119 @@ void bat_cb(Fl_Widget* w, void* p)
         }
     }
 }
+
+
+class Customer_Dialog {
+    public:
+        Customer_Dialog() { // Create and populate the dialog (but don't show it!)
+        dialog = new Fl_Window(340, 270, "Create Customer");
+        rp_name = new Fl_Input(120, 40, 210, 25, "Name:");
+        rp_name->align(FL_ALIGN_LEFT);
+        rp_phone_number = new Fl_Input(120, 70, 210, 25, "Phone Number:");
+        rp_phone_number->align(FL_ALIGN_LEFT);
+        rp_email = new Fl_Input(120, 100, 210, 25, "Email:");
+        rp_email->align(FL_ALIGN_LEFT);
+        rp_create = new Fl_Return_Button(145, 240, 120, 25, "Create");
+        rp_create->callback((Fl_Callback *)create_customerCB, 0);
+        rp_cancel = new Fl_Button(270, 240, 60, 25, "Cancel");
+        rp_cancel->callback((Fl_Callback *)cancel_customerCB, 0);
+        dialog->end();
+        dialog->set_non_modal();
+ }
+        void show() {dialog->show();}
+        void hide() {dialog->hide();}
+        string name() {return rp_name->value();}
+        string phone_number() {return rp_phone_number->value();}
+        string email() {return rp_email->value();}
+
+    private:
+        Fl_Window *dialog;
+        Fl_Input *rp_name;
+        Fl_Input *rp_phone_number;
+        Fl_Input *rp_email;
+        Fl_Return_Button *rp_create;
+        Fl_Button *rp_cancel;
+};
+
+Customer_Dialog * customer_dlg;
+
+void create_customer(Fl_Widget* w, void* p) 
+{
+    customer_dlg = new Customer_Dialog{};
+    customer_dlg->show();
+
+}
+void create_customerCB(Fl_Widget* w, void* p) { // Replace with call to model!
+    string name = customer_dlg->name();
+    string phone_number = customer_dlg->phone_number();
+    string email = customer_dlg->email();
+    _shop.create_new_customer(name, phone_number, email);
+    customer_dlg->hide();
+    fl_message("Customer Created!");
+}
+
+
+// Callback to just throw away the data
+void cancel_customerCB(Fl_Widget* w, void* p) {
+ customer_dlg->hide();
+}
+
+//=====================================================================SA
+
+
+class Associate_Dialog {
+    public:
+        Associate_Dialog() { // Create and populate the dialog (but don't show it!)
+        dialog = new Fl_Window(340, 270, "Create Sales Associate");
+        rp_name = new Fl_Input(120, 40, 210, 25, "Name:");
+        rp_name->align(FL_ALIGN_LEFT);
+        rp_id_number = new Fl_Int_Input(120, 70, 210, 25, "Employee ID:");
+        rp_id_number->align(FL_ALIGN_LEFT);
+        rp_create = new Fl_Return_Button(145, 240, 120, 25, "Create");
+        rp_create->callback((Fl_Callback *)create_associateCB, 0);
+        rp_cancel = new Fl_Button(270, 240, 60, 25, "Cancel");
+        rp_cancel->callback((Fl_Callback *)cancel_associateCB, 0);
+        dialog->end();
+        dialog->set_non_modal();
+ }
+        void show() {dialog->show();}
+        void hide() {dialog->hide();}
+        string name() {return rp_name->value();}
+        int id_number() {return (stoi(rp_id_number->value()));}
+
+    private:
+        Fl_Window *dialog;
+        Fl_Input *rp_name;
+        Fl_Input *rp_id_number;
+        Fl_Return_Button *rp_create;
+        Fl_Button *rp_cancel;
+};
+
+Associate_Dialog * associate_dlg;
+
+void create_associate(Fl_Widget* w, void* p) 
+{
+    associate_dlg = new Associate_Dialog{};
+    associate_dlg->show();
+
+}
+void create_associateCB(Fl_Widget* w, void* p) { // Replace with call to model!
+    string name = associate_dlg->name();
+    int id_number = associate_dlg->id_number();
+    _shop.create_new_sales_associate(name, id_number);
+    associate_dlg->hide();
+    fl_message("Sales Associate Created!");
+}
+
+
+// Callback to just throw away the data
+void cancel_associateCB(Fl_Widget* w, void* p) {
+ associate_dlg->hide();
+}
+
+//=====================================================================Locomotor
+
+
 void create_robot_model_cb(Fl_Widget* w, void* p) 
 {
     if(dial->name() == "")
@@ -1776,7 +1913,7 @@ void ViewSalesAssociates(Fl_Widget* w, void* p)
 }
 void ViewRobotModels(Fl_Widget* w, void* p)
 {
-    
+    fl_message((_shop.view_model_summary()).c_str());
 }
 void ViewOrders(Fl_Widget* w, void* p)
 {
@@ -1860,6 +1997,7 @@ void QuitCB(Fl_Widget* w, void* p)
 }
 
 
+
 Fl_Menu_Item menuitems[] = {
     { "&File", FL_ALT + 'f', 0, 0, FL_SUBMENU },
     { "&Load", FL_ALT + 'q', (Fl_Callback *)LoadFile },
@@ -1879,8 +2017,8 @@ Fl_Menu_Item menuitems[] = {
 //    {"Head", 0,0,0,(Fl_Callback *)create_robot_part}, {"Locomotor"}, {"Torso"}, {"Arm"}, {"Battery"},
     { 0 },
     { "&Robot Model", FL_ALT + 'a', (Fl_Callback *)create_robot_model },
-    { "&Customer", FL_ALT + 'i', (Fl_Callback *)ViewCustomers},
-    { "&Sales Associate", FL_ALT + 'o', (Fl_Callback *)ViewCustomers },
+    { "&Customer", FL_ALT + 'i', (Fl_Callback *)create_customer},
+    { "&Sales Associate", FL_ALT + 'o', (Fl_Callback *)create_associate },
     { "&Order", FL_ALT + 'o', (Fl_Callback *) ViewCustomers},
     { 0 },
     
